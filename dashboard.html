@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkillSwap | Student Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #1e293b;
+        }
+
+        /* Header */
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #312e81, #4f46e5, #7c3aed);
+            color: white;
+            padding: 25px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .header-title p {
+            margin-bottom: 0;
+            color: #e0e7ff;
+        }
+
+        .logout-button {
+            background: white;
+            color: #4338ca;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .logout-button:hover {
+            background: #e0e7ff;
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+
+        .dashboard-container {
+            max-width: 1150px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        /* Welcome Section */
+
+        .welcome-card {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            margin-bottom: 35px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-left: 5px solid #6366f1;
+        }
+
+        .welcome-card h2 {
+            font-size: 26px;
+            margin-top: 0;
+            color: #312e81;
+        }
+
+        .welcome-card > p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-top: 25px;
+        }
+
+        .profile-item {
+            background: #f1f5ff;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .profile-item h3 {
+            color: #4f46e5;
+            font-size: 15px;
+            margin-top: 0;
+        }
+
+        .profile-item p {
+            font-weight: bold;
+            color: #334155;
+            overflow-wrap: anywhere;
+            margin-bottom: 0;
+        }
+
+        /* Section Heading */
+
+        .section-heading {
+            color: #312e81;
+            font-size: 23px;
+            margin: 35px 0 20px;
+        }
+
+        /* Statistics */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.09);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+        }
+
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #4f46e5;
+            margin: 0;
+        }
+
+        /* Navigation Cards */
+
+        .navigation-card {
+            display: block;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: #1e293b;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eef0f6;
+            transition: 0.3s;
+        }
+
+        .navigation-card:hover {
+            transform: translateY(-6px);
+            border-color: #818cf8;
+            box-shadow: 0 12px 25px rgba(79,70,229,0.12);
+        }
+
+        .navigation-card .emoji {
+            font-size: 36px;
+        }
+
+        .navigation-card h3 {
+            color: #4338ca;
+            margin: 15px 0 10px;
+        }
+
+        .navigation-card p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .card-link {
+            display: inline-block;
+            color: #4f46e5;
+            font-weight: bold;
+            margin-top: 18px;
+        }
+
+        /* Messages */
+
+        #profileMessage,
+        #statsMessage {
+            color: #dc2626;
+            font-size: 14px;
+        }
+
+        /* Footer */
+
+        .dashboard-footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            background: white;
+            margin-top: 45px;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-header {
+                padding: 22px;
+            }
+
+            .header-title h1 {
+                font-size: 24px;
+            }
+
+            .welcome-card {
+                padding: 22px;
+            }
+
+            .section-heading {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <header class="dashboard-header">
+
+        <div class="header-title">
+            <h1>🎓 SkillSwap</h1>
+            <p>Learn Together. Grow Together.</p>
+        </div>
+
+        <button class="logout-button" onclick="logout()">
+            Logout ↗
+        </button>
+
+    </header>
+
+    <main class="dashboard-container">
+
+        <!-- Welcome Section -->
+
+        <section class="welcome-card">
+
+            <h2>
+                Welcome, <span id="studentName">Student</span>! 👋
+            </h2>
+
+            <p>
+                Welcome to your learning dashboard.
+                Discover talented students, exchange knowledge
+                and improve your skills together.
+            </p>
+
+            <p id="studentEmail">Loading your account...</p>
+
+            <p id="profileMessage"></p>
+
+            <div class="profile-details">
+
+                <div class="profile-item">
+                    <h3>🏫 My College</h3>
+                    <p id="studentCollege">Loading...</p>
+                </div>
+
+                <div class="profile-item">
+                    <h3>📚 Skill I Can Teach</h3>
+                    <p id="studentTeach">Loading...</p>
+                </div>
+
+                <div class="profile-item">
+                    <h3>🎯 Skill I Want to Learn</h3>
+                    <p id="studentLearn">Loading...</p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Statistics -->
+
+        <h2 class="section-heading">📊 My SkillSwap Statistics</h2>
+
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <h3>Total Students</h3>
+                <p class="stat-number" id="totalStudents">Loading...</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🤝</div>
+                <h3>My Skill Matches</h3>
+                <p class="stat-number" id="totalMatches">Loading...</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📩</div>
+                <h3>Pending Requests</h3>
+                <p class="stat-number" id="pendingRequests">Loading...</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <h3>Accepted Exchanges</h3>
+                <p class="stat-number" id="acceptedRequests">Loading...</p>
+            </div>
+
+        </div>
+
+        <p id="statsMessage"></p>
+
+        <!-- Navigation -->
+
+        <h2 class="section-heading">🚀 Explore SkillSwap</h2>
+
+        <div class="dashboard-grid">
+
+            <a href="students.html" class="navigation-card">
+                <div class="emoji">👥</div>
+                <h3>Student Directory</h3>
+                <p>Discover other students and explore the skills they offer.</p>
+                <span class="card-link">Explore Students →</span>
+            </a>
+
+            <a href="matches.html" class="navigation-card">
+                <div class="emoji">🤝</div>
+                <h3>Skill Matches</h3>
+                <p>Find students who can exchange skills with you.</p>
+                <span class="card-link">Find Matches →</span>
+            </a>
+
+            <a href="requests.html" class="navigation-card">
+                <div class="emoji">📩</div>
+                <h3>Exchange Requests</h3>
+                <p>View incoming requests and manage your learning exchanges.</p>
+                <span class="card-link">View Requests →</span>
+            </a>
+
+            <a href="edit-profile.html" class="navigation-card">
+                <div class="emoji">👤</div>
+                <h3>Edit My Profile</h3>
+                <p>Update your name and the skills you teach and want to learn.</p>
+                <span class="card-link">Edit Profile →</span>
+            </a>
+
+            <a href="feedback.html" class="navigation-card">
+                <div class="emoji">⭐</div>
+                <h3>Student Feedback</h3>
+                <p>Rate your learning exchange and share your experience.</p>
+                <span class="card-link">Give Feedback →</span>
+            </a>
+
+            <a href="reviews.html" class="navigation-card">
+                <div class="emoji">🌟</div>
+                <h3>Student Reviews</h3>
+                <p>Read ratings and feedback shared by other students.</p>
+                <span class="card-link">Read Reviews →</span>
+            </a>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+
+    <footer class="dashboard-footer">
+        <p>© 2026 SkillSwap. Learn Together. Grow Together.</p>
+        <p>Building a community through peer-to-peer learning.</p>
+    </footer>
+
+    <!-- Supabase Connection -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase.js"></script>
+
+    <script>
+
+        async function loadDashboard() {
+
+            // 1. Check logged-in user
+
+            const { data: authData, error: authError } =
+                await supabaseClient.auth.getUser();
+
+            if (authError || !authData.user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            const user = authData.user;
+
+            // 2. Display email
+
+            document.getElementById("studentEmail").textContent =
+                "Logged in as: " + user.email;
+
+            // 3. Load student profile
+
+            const { data: profile, error: profileError } =
+                await supabaseClient
+                    .from("students")
+                    .select("full_name, college, skill_to_teach, skill_to_learn")
+                    .eq("auth_user_id", user.id)
+                    .single();
+
+            if (profileError) {
+
+                document.getElementById("profileMessage").textContent =
+                    "Unable to load profile: " + profileError.message;
+
+                return;
+            }
+
+            document.getElementById("studentName").textContent =
+                profile.full_name || "Student";
+
+            document.getElementById("studentCollege").textContent =
+                profile.college || "Not added";
+
+            document.getElementById("studentTeach").textContent =
+                profile.skill_to_teach || "Not added";
+
+            document.getElementById("studentLearn").textContent =
+                profile.skill_to_learn || "Not added";
+
+            // 4. Load total student count
+
+            const { data: studentCount, error: studentError } =
+                await supabaseClient.rpc("get_total_student_count");
+
+            if (studentError) {
+
+                document.getElementById("totalStudents").textContent = "N/A";
+
+                console.error("Student count error:", studentError.message);
+
+            } else {
+
+                document.getElementById("totalStudents").textContent =
+                    studentCount;
+
+            }
+
+            // 5. Load skill matches
+
+            const { data: matches, error: matchError } =
+                await supabaseClient.rpc("get_skill_matches");
+
+            if (matchError) {
+
+                document.getElementById("totalMatches").textContent = "N/A";
+
+                console.error("Match error:", matchError.message);
+
+            } else {
+
+                document.getElementById("totalMatches").textContent =
+                    matches.length;
+
+            }
+
+            // 6. Load exchange requests
+
+            const { data: requests, error: requestError } =
+                await supabaseClient.rpc("get_my_exchange_requests");
+
+            if (requestError) {
+
+                document.getElementById("pendingRequests").textContent = "N/A";
+
+                document.getElementById("acceptedRequests").textContent = "N/A";
+
+                console.error("Request error:", requestError.message);
+
+            } else {
+
+                const pendingCount = requests.filter(
+                    request => request.status === "pending"
+                ).length;
+
+                const acceptedCount = requests.filter(
+                    request => request.status === "accepted"
+                ).length;
+
+                document.getElementById("pendingRequests").textContent =
+                    pendingCount;
+
+                document.getElementById("acceptedRequests").textContent =
+                    acceptedCount;
+
+            }
+
+        }
+
+        // Load dashboard
+
+        loadDashboard();
+
+    </script>
+
+</body>
+</html>

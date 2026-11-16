@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Exchange Requests | SkillSwap</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .requests-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .request-card {
+            background: white;
+            padding: 22px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .request-card h3 {
+            color: #2563eb;
+        }
+
+        .request-status {
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .request-actions button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .accept-button {
+            background: #16a34a;
+            color: white;
+        }
+
+        .reject-button {
+            background: #dc2626;
+            color: white;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .logout-button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="logout-button" onclick="logout()">Logout</button>
+
+    <header>
+        <h1>SkillSwap</h1>
+        <p>Manage Your Exchange Requests</p>
+    </header>
+
+    <main class="requests-container">
+
+        <h2>My Exchange Requests</h2>
+
+        <p>
+            View your sent and received skill exchange requests.
+        </p>
+
+        <div id="requestList">
+            Loading requests...
+        </div>
+
+        <a href="matches.html" class="back-button">
+            Back to Skill Matches
+        </a>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="requests.js"></script>
+
+</body>
+</html>

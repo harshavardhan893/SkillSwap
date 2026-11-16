@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Reviews | SkillSwap</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .reviews-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .review-card {
+            background: white;
+            padding: 22px;
+            margin: 18px 0;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .review-card h3 {
+            margin-top: 0;
+        }
+
+        .stars {
+            color: #f5a623;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .review-feedback {
+            margin: 12px 0;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .review-date {
+            color: #777;
+            font-size: 13px;
+        }
+
+        #message {
+            text-align: center;
+            margin: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>⭐ Student Reviews</h1>
+        <p>See what students say about their learning exchanges.</p>
+        <button onclick="logout()">Logout</button>
+    </header>
+
+    <main class="reviews-container">
+
+        <h2>Feedback from Students</h2>
+
+        <p id="message">Loading reviews...</p>
+
+        <div id="reviewsList"></div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        const reviewsList = document.getElementById("reviewsList");
+        const message = document.getElementById("message");
+
+        async function loadReviews() {
+
+            // Check whether the student is logged in
+            const { data: sessionData, error: sessionError } =
+                await supabaseClient.auth.getSession();
+
+            if (sessionError || !sessionData.session) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Fetch reviews with actual student names
+            const { data, error } = await supabaseClient.rpc(
+                "get_student_reviews"
+            );
+
+            if (error) {
+                message.textContent =
+                    "Unable to load reviews: " + error.message;
+                return;
+            }
+
+            reviewsList.replaceChildren();
+
+            if (!data || data.length === 0) {
+                message.textContent = "No reviews available yet.";
+                return;
+            }
+
+            message.textContent = "";
+
+            data.forEach(function(review) {
+
+                const card = document.createElement("div");
+                card.className = "review-card";
+
+                const heading = document.createElement("h3");
+                heading.textContent =
+                    "Student reviewed " +
+                    (review.reviewee_name || "Student");
+
+                const reviewer = document.createElement("p");
+                reviewer.textContent =
+                    "Reviewed by: " +
+                    (review.reviewer_name || "Student");
+
+                const stars = document.createElement("div");
+                stars.className = "stars";
+
+                const rating = Number(review.rating) || 0;
+
+                stars.textContent =
+                    "★".repeat(rating) +
+                    "☆".repeat(5 - rating);
+
+                const feedback = document.createElement("p");
+                feedback.className = "review-feedback";
+                feedback.textContent =
+                    review.feedback && review.feedback.trim()
+                        ? review.feedback
+                        : "No written feedback provided.";
+
+                const date = document.createElement("p");
+                date.className = "review-date";
+
+                date.textContent =
+                    "Date: " +
+                    new Date(review.created_at).toLocaleDateString();
+
+                card.appendChild(heading);
+                card.appendChild(reviewer);
+                card.appendChild(stars);
+                card.appendChild(feedback);
+                card.appendChild(date);
+
+                reviewsList.appendChild(card);
+            });
+        }
+
+        loadReviews();
+    </script>
+
+</body>
+</html>

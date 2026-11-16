@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Profile | SkillSwap</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>SkillSwap</h1>
+        <p>Edit Your Profile</p>
+    </header>
+
+    <main class="form-container">
+
+        <h2>Update Your Profile</h2>
+
+        <form id="editProfileForm">
+
+            <label for="fullName">Full Name</label>
+            <input
+                type="text"
+                id="fullName"
+                placeholder="Enter your full name"
+                required
+            >
+
+            <label for="teach">Skill You Can Teach</label>
+            <input
+                type="text"
+                id="teach"
+                placeholder="Example: Python"
+                required
+            >
+
+            <label for="learn">Skill You Want to Learn</label>
+            <input
+                type="text"
+                id="learn"
+                placeholder="Example: Web Development"
+                required
+            >
+
+            <button type="submit">Save Changes</button>
+
+        </form>
+
+        <p id="message"></p>
+
+        <a href="dashboard.html">Back to Dashboard</a>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="edit-profile.js"></script>
+
+</body>
+</html>

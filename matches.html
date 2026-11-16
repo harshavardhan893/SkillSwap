@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkillSwap - Skill Matches</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .logout-button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="logout-button" onclick="logout()">Logout</button>
+
+    <header>
+        <h1>SkillSwap</h1>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="students.html">Students</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Your Skill Matches</h1>
+
+        <p>Find students who can exchange skills with you.</p>
+
+        <div id="matchList">
+            <p>Finding your skill matches...</p>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="matches.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Feedback | SkillSwap</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #f1f5f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .feedback-container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .feedback-card {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .feedback-card h3 {
+            color: #2563eb;
+        }
+
+        .feedback-card select,
+        .feedback-card textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .feedback-card textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #1d4ed8;
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .logout-button {
+            background: #dc2626;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 15px;
+        }
+
+        .status-message {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="logout-button" onclick="logout()">Logout</button>
+
+    <header>
+        <h1>SkillSwap</h1>
+        <p>Share Your Learning Experience</p>
+    </header>
+
+    <main class="feedback-container">
+
+        <h2>Student Feedback ⭐</h2>
+
+        <p>
+            Give feedback to students after completing
+            an accepted skill exchange.
+        </p>
+
+        <div id="feedbackList">
+            Loading accepted exchanges...
+        </div>
+
+        <a href="dashboard.html">Back to Dashboard</a>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+
+        async function loadFeedback() {
+
+            const feedbackList =
+                document.getElementById("feedbackList");
+
+            // 1. Check logged-in user
+
+            const { data: authData, error: authError } =
+                await supabaseClient.auth.getUser();
+
+            if (authError || !authData.user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // 2. Get current student's profile
+
+            const { data: student, error: studentError } =
+                await supabaseClient
+                    .from("students")
+                    .select("id")
+                    .eq("auth_user_id", authData.user.id)
+                    .single();
+
+            if (studentError) {
+                feedbackList.textContent =
+                    "Unable to load your student profile: " +
+                    studentError.message;
+                return;
+            }
+
+            // 3. Get accepted exchange requests
+
+            const { data: requests, error: requestError } =
+                await supabaseClient
+                    .from("exchange_requests")
+                    .select("id, requester_id, receiver_id, status")
+                    .eq("status", "accepted")
+                    .or(
+                        `requester_id.eq.${student.id},receiver_id.eq.${student.id}`
+                    );
+
+            if (requestError) {
+                feedbackList.textContent =
+                    "Unable to load accepted exchanges: " +
+                    requestError.message;
+                return;
+            }
+
+            if (!requests || requests.length === 0) {
+                feedbackList.textContent =
+                    "You don't have any accepted exchanges yet.";
+                return;
+            }
+
+            feedbackList.innerHTML = "";
+
+            // 4. Display each accepted exchange
+
+            for (const request of requests) {
+
+                const revieweeId =
+                    request.requester_id === student.id
+                        ? request.receiver_id
+                        : request.requester_id;
+
+                // Check whether feedback already exists
+
+                const { data: existingReview, error: reviewError } =
+                    await supabaseClient
+                        .from("reviews")
+                        .select("id")
+                        .eq("request_id", request.id)
+                        .eq("reviewer_id", student.id)
+                        .maybeSingle();
+
+                if (reviewError) {
+                    console.error(reviewError.message);
+                    continue;
+                }
+
+                const card = document.createElement("div");
+                card.className = "feedback-card";
+
+                const heading = document.createElement("h3");
+                heading.textContent = "Your Skill Exchange Partner";
+
+                const description = document.createElement("p");
+                description.textContent =
+                    "Share your experience with this accepted exchange.";
+
+                card.appendChild(heading);
+                card.appendChild(description);
+
+                // If feedback was already submitted
+
+                if (existingReview) {
+
+                    const message = document.createElement("p");
+
+                    message.textContent =
+                        "✓ Feedback already submitted for this exchange.";
+
+                    message.style.color = "green";
+
+                    card.appendChild(message);
+
+                } else {
+
+                    // Rating label
+
+                    const ratingLabel = document.createElement("label");
+                    ratingLabel.textContent = "Select Rating:";
+
+                    const rating = document.createElement("select");
+
+                    rating.innerHTML = `
+                        <option value="">Choose a rating</option>
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="3">3 - Good</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="1">1 - Needs Improvement</option>
+                    `;
+
+                    // Feedback label
+
+                    const feedbackLabel = document.createElement("label");
+                    feedbackLabel.textContent = "Write Your Feedback:";
+
+                    const feedback = document.createElement("textarea");
+
+                    feedback.placeholder =
+                        "Describe your learning experience...";
+
+                    // Submit button
+
+                    const submitButton = document.createElement("button");
+
+                    submitButton.className = "submit-button";
+                    submitButton.textContent = "Submit Feedback";
+
+                    const message = document.createElement("p");
+                    message.className = "status-message";
+
+                    // Submit feedback
+
+                    submitButton.addEventListener("click", async () => {
+
+                        const selectedRating = Number(rating.value);
+
+                        const feedbackText = feedback.value.trim();
+
+                        // Validate rating
+
+                        if (!selectedRating ||
+                            selectedRating < 1 ||
+                            selectedRating > 5) {
+
+                            message.textContent =
+                                "Please select a rating.";
+
+                            message.style.color = "red";
+                            return;
+                        }
+
+                        // Require written feedback
+
+                        if (feedbackText.length === 0) {
+
+                            message.textContent =
+                                "Please write your feedback before submitting.";
+
+                            message.style.color = "red";
+                            return;
+                        }
+
+                        // Check feedback length
+
+                        if (feedbackText.length > 1000) {
+
+                            message.textContent =
+                                "Feedback must be 1000 characters or fewer.";
+
+                            message.style.color = "red";
+                            return;
+                        }
+
+                        submitButton.disabled = true;
+                        submitButton.textContent = "Submitting...";
+
+                        // Insert review into Supabase
+
+                        const { error: insertError } =
+                            await supabaseClient
+                                .from("reviews")
+                                .insert({
+                                    request_id: request.id,
+                                    reviewer_id: student.id,
+                                    reviewee_id: revieweeId,
+                                    rating: selectedRating,
+                                    feedback: feedbackText
+                                });
+
+                        if (insertError) {
+
+                            message.textContent =
+                                "Submission failed: " +
+                                insertError.message;
+
+                            message.style.color = "red";
+
+                            submitButton.disabled = false;
+                            submitButton.textContent = "Submit Feedback";
+
+                        } else {
+
+                            message.textContent =
+                                "✓ Feedback submitted successfully!";
+
+                            message.style.color = "green";
+
+                            rating.disabled = true;
+                            feedback.disabled = true;
+
+                            submitButton.remove();
+
+                        }
+
+                    });
+
+                    card.appendChild(ratingLabel);
+                    card.appendChild(rating);
+
+                    card.appendChild(feedbackLabel);
+                    card.appendChild(feedback);
+
+                    card.appendChild(submitButton);
+                    card.appendChild(message);
+
+                }
+
+                feedbackList.appendChild(card);
+
+            }
+
+        }
+
+        // Load feedback page
+
+        loadFeedback();
+
+    </script>
+
+</body>
+</html>
